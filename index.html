@@ -31,23 +31,47 @@
 		<link rel="stylesheet" type="text/css" href="css/af.ui.css" title="default" />
 		<link rel="stylesheet" type="text/css" href="css/icons.css" title="default" />
 		<style>
-		.list small {
-			display: block;
-			opacity: 0.5;
+		img {
+			width: 100%;
 		}
+        #wiki h1 {
+            font-size: 1.7em;
+            color: #0088D1;
+            margin: 10px 0px !important;
+        }
+        #wiki h2 {
+            font-size: 1.4em;
+            color: #0088D1 !important;
+        }
+        #wiki a {
+            display: inline-block;
+            padding: 5px;
+            color: #fff;
+            background-color: #0088D1;
+            margin: 5px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
 		</style>
     </head>
     <body>
-		<div id="afui">
+		<div id="afui" class="android light">
 			<div id="header"><h1>thoso.MiniWiki</h1></div>
 			<div id="content">
-				<div class="panel" id="paginas" selected="true">
+				<div class="panel" id="paginas" selected="true" data-footer="footermain">
 					<ul id="listapaginas" class="list">
 					</ul>
 				</div>
+                <div class="panel" id="wiki" data-footer="footermain">
+                </div>
 			</div>
+             <footer id="footermain">
+                <a id="refresh" class="icon folder" href="#paginas">Índice</a>
+                <a class="icon home" href="#" onclick="app.abrePagina('Main')">Página inicial</a>
+            </footer>
 		</div>
         <script type="text/javascript">
+            $.ui.useOSThemes=false;
             app.initialize();
 
 			$.ui.ready(function() {

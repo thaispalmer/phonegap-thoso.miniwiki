@@ -18,8 +18,8 @@
  */
 var app = {
 
-	urlservidor: 'https://st0rage.org/~thoso/links.php?fetch=1',
-	links: {},
+	urlservidor: 'https://st0rage.org/~thoso/miniwiki.php',
+	paginas: {},
 
 	// Application Constructor
 	initialize: function() {
@@ -45,14 +45,10 @@ var app = {
 	init: function() {
 		
 		$('#refresh').click(function() {
-			app.atualizaLinks();
-		});
-		$('#addlink').submit(function(event) {
-			event.preventDefault();
-			app.adicionaLink();
+			app.atualizaPaginas();
 		});
 
-		app.atualizaLinks();
+		app.atualizaPaginas();
 		
 	},
     
@@ -63,44 +59,40 @@ var app = {
         else window.open(url, "_system");
     },
 		
-	atualizaLinks: function() {
-		$.ui.loadContent("#links");
-		$.ui.showMask("Buscando links...");
-		$.get(app.urlservidor,function(result) {
-			app.links = $.parseJSON(result);
-			$('#ordenar').removeClass('up').addClass('down');
-			app.mostraLinks();
+	atualizaPaginas: function() {
+		$.ui.loadContent("#paginas");
+		$.ui.showMask("Buscando páginas...");
+		$.get(app.urlservidor + '?fetch=1',function(result) {
+			app.paginas = $.parseJSON(result);
+			app.listaPaginas();
 			$.ui.hideMask();
 		});
 	},
 	
-	mostraLinks: function() {
-		 $('#listaurls').html('');
-			$.each(app.links,function(index,value) {
-				$('<li></li>').html('<a href="#" onclick="app.abreLink(' + "'" + value.url + "'" + ')">' + value.desc + '<small>' + value.url + '</small></a>').appendTo('#listaurls');
-			});
+	listaPaginas: function() {
+        $('#listapaginas').html('');
+        $.each(app.paginas,function(index,value) {
+            $('<li></li>').html('<a href="#" onclick="app.abrePagina(' + "'" + value.arquivo + "'" + ')">' + value.arquivo + '</a>').appendTo('#listapaginas');
+        });
 	},
-	
-	adicionaLink:function() {
-		if ($('#addlink input[name=url]').val() == '') { $.ui.popup('Preencha a URL'); return; }
-		$.ui.showMask("Adicionando...");
-		$.post(app.urlservidor,$('#addlink').serialize(),function() {
+    
+    abrePagina: function(arquivo) {
+        $('#wiki').html('');
+        $.ui.loadContent("#wiki");
+        $.ui.showMask("Carregando conteúdo...");
+        $.get(app.urlservidor + '?arquivo=' + arquivo,function(result) {
+			$('<div></div>').attr('id','#temp').html(result).appendTo('#wiki');
+            var conteudo = $('#conteudo').html();
+            $('#wiki').html(conteudo);
+            $('#wiki a').each(function () {
+                var link = $(this).attr('href');
+                $(this).attr('href','#');
+                if (link.substr(0,9) == '?arquivo=') $(this).attr('onclick',"app.abrePagina('" + link.substr(9) + "')");
+                else $(this).attr('onclick',"app.abreLink('" + link + "')");
+            });
 			$.ui.hideMask();
-			$.ui.popup('Link Adicionado!');
-			app.atualizaLinks();
 		});
-		$('#addlink input[name=desc]').val('');
-		$('#addlink input[name=url]').val('');
-	},
-	
-	ordenaLista:function() {
-		if ($('#ordenar').hasClass('down')) $('#ordenar').removeClass('down').addClass('up');
-		else if ($('#ordenar').hasClass('up')) $('#ordenar').removeClass('up').addClass('down');
-		$.ui.showMask("Ordenando...");
-		app.links.reverse();
-		app.mostraLinks();
-		$.ui.hideMask();
-	}
+    }
 
 	
 };
